@@ -57,7 +57,7 @@ def login():
 @login_required 
 def logout():
     logout_user() 
-    return redirect(url_for('login'))  # 重定向回首页
+    return redirect(url_for('login'))  # 重定向回登录页
 
 # 首页视图，今日视图
 @app.route('/')
