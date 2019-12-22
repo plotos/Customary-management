@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}
+今日
+{% endblock title %}
+{% block sidebar %}
+<div class="col-md-2 sidebar">
+    <ul class="nav nav-sidebar">
+        <li class="active"><a href="{{ url_for('today') }}">今日</a></li>
+        <li><a href="{{ url_for('habit_list') }}">习惯列表</a></li>
+    </ul>
+</div>
+{% endblock sidebar %}
+{% block main %}
+<div class="col-md-10 col-md-offset-2 main">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>习惯名称</th>
+                <th>是否完成</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+                {% if id == record.id %}
+                <form action="{{ url_for('today_modify', id=record.id, habit_id=record.habit_id) }}" method="post">
+                    <tr>
+                        <td><input name="habit_name" type="text" class="form-control" value="{{ record.habit_name }}" readonly="readonly"></td>
+                        <td>
+                            <select name="is_complete" class="form-control" value="{{ record.is_complete }}">
+                                {% if record.is_complete == "是" %}
+                                    <option value="是" selected>是</option>
+                                    <option value="否">否</option>
+                                {% else %}
+                                    <option value="是">是</option>
+                                    <option value="否" selected>否</option>
+                                {% endif %}
+                            </select>
+                        </td>
+                        <td><input name="remark" type="text" class="form-control" value="{{ record.remark }}" required></td>
+                        <td><input type="submit" class="btn btn-success" value="保存"></td>
+                    </tr>
+                </form>
+                {% else %}
+                    <tr>
+                        <td>{{ record.habit_name }}</td>
+                        <td>{{ record.is_complete }}</td>
+                        <td>{{ record.remark }}</td>
+                        <td><a class="btn btn-default" href="{{ url_for('today_modify', id=record.id, habit_id=record.habit_id) }}">修改</a></td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock main %}

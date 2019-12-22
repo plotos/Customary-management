@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}
+习惯列表
+{% endblock title %}
+{% block sidebar %}
+<div class="col-md-2 sidebar">
+    <ul class="nav nav-sidebar">
+        <li><a href="{{ url_for('today') }}">今日</a></li>
+        <li class="active"><a href="{{ url_for('habit_list') }}">习惯列表</a></li>
+    </ul>
+</div>
+{% endblock sidebar %}
+{% block main %}
+<div class="col-md-10 col-md-offset-2 main">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>习惯名称</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for habit in habits %}
+                {% if id == habit.id %}
+                    <form action="{{ url_for('habit_list_modify', id=habit.id) }}" method="post">
+                        <tr>
+                            <td><input name="habit_name" class="form-control" type="text" value="{{ habit.habit_name }}" required></td>
+                            <td><input class="btn btn-success" type="submit" value="保存"></td>
+                        </tr>
+                    </form>
+                {% else %}
+                    <tr>
+                        <td>{{ habit.habit_name }}</td>
+                        <td>
+                            <a class="btn btn-default" href="{{ url_for('habit_list_modify', id=habit.id) }}">修改</a>
+                            <a class="btn btn-danger" href="{{ url_for('habit_list_del', id=habit.id) }}">删除</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            <tr>
+                <td><a class="btn btn-block" href="{{ url_for('habit_list_add') }}">添加习惯</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock main %}

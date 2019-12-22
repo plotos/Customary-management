@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}
+历史
+{% endblock title %}
+{% block sidebar %}
+<div class="col-md-2 sidebar">
+    <form action="{{ url_for('history')}}" method="post">
+        <div class="form-group">
+            <label>选择日期：</label>
+            <!--指定 date标记-->
+            <div class='input-group date' id='datetimepicker'>
+                <input name="now" type='text' class="form-control" value="{{ now }}" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-default" value="提交">
+        </div>
+    </form>
+</div>
+{% endblock sidebar %}
+{% block main %}
+<div class="col-md-10 col-md-offset-2 main">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>习惯名称</th>
+                <th>是否完成</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+                {% if id == record.id %}
+                <form action="{{ url_for('history_modify', id=record.id, habit_id=record.habit_id, now_date=now) }}" method="post">
+                    <tr>
+                        <td><input name="habit_name" type="text" class="form-control" value="{{ record.habit_name }}" readonly="readonly"></td>
+                        <td>
+                            <select name="is_complete" class="form-control" value="{{ record.is_complete }}">
+                                {% if record.is_complete == "是" %}
+                                    <option value="是" selected>是</option>
+                                    <option value="否">否</option>
+                                {% else %}
+                                    <option value="是">是</option>
+                                    <option value="否" selected>否</option>
+                                {% endif %}
+                            </select>
+                        </td>
+                        <td><input name="remark" type="text" class="form-control" value="{{ record.remark }}" required></td>
+                        <td><input type="submit" class="btn btn-success" value="保存"></td>
+                    </tr>
+                </form>
+                {% else %}
+                    <tr>
+                        <td>{{ record.habit_name }}</td>
+                        <td>{{ record.is_complete }}</td>
+                        <td>{{ record.remark }}</td>
+                        <td><a class="btn btn-default" href="{{ url_for('history_modify', id=record.id, habit_id=record.habit_id, now_date=now) }}">修改</a></td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<!-- 日期选择 -->
+<script>
+    $(function () {
+        $('#datetimepicker').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: moment.locale('zh-cn')
+        });
+    });
+</script>
+{% endblock main %}
+
