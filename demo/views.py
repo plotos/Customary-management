@@ -1,8 +1,10 @@
 from demo import app, db
 from demo.models import User, Record, Habit
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, jsonify
 from flask_login import login_user, current_user, login_required, logout_user
 from datetime import date, datetime
+from sqlalchemy import extract
+from calendar import monthrange, isleap
 
 # 注册视图
 @app.route('/register', methods=['GET', 'POST'])
@@ -216,3 +218,39 @@ def history_modify(id, habit_id, now_date):
         return redirect(url_for('history'))
 
     return render_template('history.html', id=id, records=records, now=now)
+
+# 统计视图
+@app.route('/statistics')
+@app.route('/statistics/<int:habit_id>')
+@login_required
+def statistics(habit_id=0):
+    habits = Habit.query.filter_by(uid=current_user.id)
+    return render_template('statistics.html', habits=habits, habit_id=habit_id)
+
+# 图表数据
+@app.route('/echarts/<int:habit_id>')
+@login_required
+def echarts(habit_id):
+    month = date.today().month
+    year = date.today().year
+    month_days = monthrange(year, month)[1]
+    year_days = 366 if isleap(int(str(year))) else 365
+    # 月统计数据
+    month_complete_num = Record.query.filter( extract('year', Record.date) == year, extract('month', Record.date) == month).filter_by(uid=current_user.id, habit_id=habit_id, is_complete="是").count()
+    # 年统计数据
+    year_complete_num = Record.query.filter( extract('year', Record.date) == year).filter_by(uid=current_user.id, habit_id=habit_id, is_complete="是").count()
+    # 热力图数据
+    complete_days = Record.query.with_entities(Record.date).filter( extract('year', Record.date) == year).filter_by(uid=current_user.id, habit_id=habit_id, is_complete="是").all()
+    heatMap_data = []
+    for complete_day in complete_days:
+        heatMap_data.append(datetime.strftime(complete_day.date, '%Y-%m-%d'))
+        print(type(complete_day))
+    month_data = [
+        {"value":month_complete_num},
+        {"value":month_days - month_complete_num}
+    ]
+    year_data = [
+        {"value":year_complete_num},
+        {"value":year_days - year_complete_num}
+    ]
+    return jsonify({"month_data": month_data,"year_data": year_data,"complete_days":heatMap_data})

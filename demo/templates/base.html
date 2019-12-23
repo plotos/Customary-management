@@ -20,6 +20,9 @@
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static',filename='moment-with-locales.min.js') }}"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+    <!-- echarts.js -->
+    <script type="text/javascript" src="http://echarts.baidu.com/dist/echarts.js"></script>
     
     <title>{% block title %}{% endblock title %}</title>
 </head>
@@ -34,6 +37,7 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('today') }}">首页</a></li>
                     <li><a href="{{ url_for('history') }}">历史</a></li>
+                    <li><a href="{{ url_for('statistics') }}">统计</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="{{ url_for('logout') }}">退出</a></li>
